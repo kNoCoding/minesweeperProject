@@ -2,10 +2,47 @@
     box-sizing: border-box;
 }
 
-/* :root {
-    --border-radius: 10px;
+
+body,
+table {
+    text-align: center;
+    margin: 0 auto;
 }
 
-div {
-    border-radius: var(--border-radius);
-} */
+table {
+    background-color: darkgrey;
+}
+
+td {
+    color: transparent;
+    table-layout: fixed;
+    padding: 20px;
+    background-color: whitesmoke;
+}
+
+td:hover {
+    cursor: pointer;
+}
+
+.revealed {
+    color: black;
+}
+
+.footer {
+    width: 100%;
+
+    position: fixed;
+    bottom: 0;
+
+    padding-bottom: 10px;
+}
+
+div a {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover {
+    background-color: darkblue;
+    color: antiquewhite;
+}

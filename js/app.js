@@ -77,14 +77,15 @@ function setMinesNegsCount(board) {
             const currCell = board[i][j]
 
             if (!currCell.isMine) {
-                minesNegsCount = countBombsAround(board, i, j)
+                minesNegsCount = countMinesNegsCell(board, i, j)
                 currCell.minesAroundCount = minesNegsCount
             }
         }
     }
 }
 
-function countBombsAround(board, rowIdx, colIdx) {
+// counts the mines around the cell
+function countMinesNegsCell(board, rowIdx, colIdx) {
     var count = 0
     for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
         if (i < 0 || i >= board.length) continue
@@ -115,7 +116,7 @@ function renderBoard(board) {
             }
 
             const className = `cell cell-${i}-${j}`
-            strHTML += `<td class="${className}">${currCell}</td>\n`
+            strHTML += `<td class="${className}" onclick="onCellClicked(this, event, ${i}, ${j})">${currCell}</td>\n`
         }
         strHTML += `</tr>\n`
     }
@@ -124,7 +125,30 @@ function renderBoard(board) {
 }
 
 // Called when a cell is clicked
-function onCellClicked(elCell, i, j) { }
+function onCellClicked(elCell, ev, i, j) {
+
+    
+
+    //dont allow clicking revealed cell
+    if (gBoard[i][j].isShown === true) return
+
+    //update model
+    gBoard[i][j].isShown = true
+
+    // update dom
+    elCell.classList.add('revealed')
+
+
+
+
+
+
+
+
+    console.log('onCellClicked(elCell, i, j)', `onCellClicked(${elCell},${ev} ,  ${i}, ${j})`)
+    console.log('elCell:', elCell)
+    console.log('ev:', ev)
+}
 
 //Called when a cell is clicked
 function onCellMarked(elCell) { }
