@@ -8,10 +8,10 @@ function getRandomColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
     for (var i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+        color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
-  }
+}
 
 function makeId(length = 6) {
     var txt = ''
@@ -19,10 +19,10 @@ function makeId(length = 6) {
 
     for (var i = 0; i < length; i++) {
         txt += possible.charAt(Math.floor(Math.random() * possible.length))
-    }    
+    }
 
     return txt
-}    
+}
 
 function getPosOfRandomCell(mat, value) {
     var cellsPos = []
@@ -88,21 +88,24 @@ function getRandomItem(arr) {
 function countNeighbors(idxI, idxJ, mat, iRange = 1, jRange = 1, value = '') {
     var count = 0
     for (let i = idxI - iRange; i < idxI + iRange; i++) {
-      if (i < 0 || i >= mat.length) continue
-      for (let j = idxJ - jRange; j < idxJ + jRange; j++) {
-        if (j < 0 || j >= mat[i].length) continue
-        if (i === idxI && j === idxJ) continue
-        if (value) {
-          if (mat[i][j] === value) count++
-          continue
+        if (i < 0 || i >= mat.length) continue
+        for (let j = idxJ - jRange; j < idxJ + jRange; j++) {
+            // console.log('i,j:', `${i},${j}, ${value}`)
+            if (j < 0 || j >= mat[i].length) continue
+            if (i === idxI && j === idxJ) continue
+            if (value) {
+                console.log('i,j:', `${i},${j}, ${value} <- (near a bomb)`)
+
+                if (mat[i][j] === value) count++
+                continue
+            }
+            if (mat[i][j] !== '') count++
         }
-        if (mat[i][j] !== '') count++
-      }
     }
     return count
-  }
+}
 
-  function createMat(ROWS, COLS) {
+function createMat(ROWS, COLS) {
     const mat = []
     for (var i = 0; i < ROWS; i++) {
         const row = []
@@ -119,3 +122,4 @@ function getRandomInt(min, max) {
     var res = Math.floor(Math.random() * diff + min)
     return res
 }
+

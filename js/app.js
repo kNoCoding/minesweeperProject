@@ -1,7 +1,6 @@
 'use strict'
 
-// const MINE = '💣'
-// const EMPTY = ' '
+const MINE = '💣'
 
 /*The model – A Matrix containing cell objects. Each cell has: 
 each cell in the gBoard is going to have this object
@@ -46,7 +45,6 @@ function buildBoard() {
     const board = []
     for (var i = 0; i < gLevel.SIZE; i++) {
         board[i] = []
-        // for (var j = 0; j < board[i].length; j++) { //doesnt work and i dunno why
         for (var j = 0; j < gLevel.SIZE; j++) {
             const cell = {
                 minesAroundCount: 0,
@@ -55,11 +53,9 @@ function buildBoard() {
                 isMarked: false,
             }
             board[i][j] = cell
-
-
         }
     }
-    //set 2 mines in the board manually
+    //set 3 mines in the board manually
     board[0][0].isMine = true
     board[1][2].isMine = true
     board[board.length - 1][board.length - 1].isMine = true
@@ -69,37 +65,40 @@ function buildBoard() {
     return board
 }
 
-// Count mines around EACH cell 
-// and set the cell's 
-// minesAroundCount
-//when this works change the var negsMinesCount to something more similar to the function name
+/*Count mines around EACH cell 
+and set the cell's 
+minesAroundCount
+*/
 function setMinesNegsCount(board) {
+    var minesNegsCount = 0
 
     for (var i = 0; i < board.length; i++) {
         for (var j = 0; j < board[i].length; j++) {
             const currCell = board[i][j]
 
-            if (currCell.isMine) {
-                console.log(`(${i},${j}) currCell.isMine:`, currCell.isMine)
-                continue
-            } else {
-                // console.log('currCell:', currCell)
-                console.log(`currCell.isMine: (${i},${j})`, currCell.isMine)
-                var negsMinesCount = 0
-                // console.log('currCell:', currCell)
-                // console.log('i got into the if statement, meaning this time its not a bomb');
-                negsMinesCount = countNeighbors(i, j, board, 1, 1, currCell.isMine)
-                // console.log('negsMinesCount:', negsMinesCount)
-                currCell.minesAroundCount = negsMinesCount
-                // console.log('currCell after adding minesaround:', currCell)
+            if (!currCell.isMine) {
+                minesNegsCount = countBombsAround(board, i, j)
+                currCell.minesAroundCount = minesNegsCount
             }
         }
     }
 }
 
+function countBombsAround(board, rowIdx, colIdx) {
+    var count = 0
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+        if (i < 0 || i >= board.length) continue
+        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+            if (i === rowIdx && j === colIdx) continue
+            if (j < 0 || j >= board[0].length) continue
+            var currCell = board[i][j]
+            if (currCell.isMine) count++
+        }
+    }
+    return count
+}
 
-// Render the board as a <table> 
-// to the page
+// Render the board as a <table> to the page
 function renderBoard(board) {
     var strHTML = ''
 
@@ -110,7 +109,7 @@ function renderBoard(board) {
 
             //makes the cell in the dom show bomb or number of bombs around
             if (board[i][j].isMine) {
-                currCell = '💣'
+                currCell = MINE
             } else {
                 currCell = +(board[i][j].minesAroundCount)
             }
@@ -142,4 +141,3 @@ function checkGameOver() { }
 // NOTE: start with a basic implementation that only opens the non-mine 1st degree neighbors
 // BONUS: if you have the time later, try to work more like the real algorithm (see description at the Bonuses section below) 
 function expandShown(board, elCell, i, j) { }
-
