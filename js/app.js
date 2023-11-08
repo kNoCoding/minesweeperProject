@@ -32,6 +32,7 @@ console.log('gGame:', gGame)
 //This is called when page loads 
 function onInit() {
     gBoard = buildBoard()
+    gGame.isOn = true
     console.log('gBoard:', gBoard)
     renderBoard(gBoard)
 }
@@ -55,6 +56,20 @@ function buildBoard() {
             board[i][j] = cell
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // STOPPED HERE - ONLY ADD THE RANDOM MINE GEN AND I CAN GET ON TO THE FUNCTIONALITY & FEATURES
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // var emptyCell = findEmptyCell()
+    // console.log('emptyCell:', emptyCell)
+    //     for (var i=0; i<3; i++){
+    // 
+    //     }
+    // var randomNum = getRandomIntInclusive(0, board.length)
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     //set 3 mines in the board manually
     board[0][0].isMine = true
     board[1][2].isMine = true
@@ -127,27 +142,15 @@ function renderBoard(board) {
 // Called when a cell is clicked
 function onCellClicked(elCell, ev, i, j) {
 
-    
-
     //dont allow clicking revealed cell
     if (gBoard[i][j].isShown === true) return
 
     //update model
     gBoard[i][j].isShown = true
+    gGame.shownCount++
 
     // update dom
     elCell.classList.add('revealed')
-
-
-
-
-
-
-
-
-    console.log('onCellClicked(elCell, i, j)', `onCellClicked(${elCell},${ev} ,  ${i}, ${j})`)
-    console.log('elCell:', elCell)
-    console.log('ev:', ev)
 }
 
 //Called when a cell is clicked
@@ -156,7 +159,9 @@ function onCellMarked(elCell) { }
 //Game ends when all mines are 
 // marked, and all the other cells 
 // are shown 
-function checkGameOver() { }
+function checkGameOver() {
+
+}
 
 // When user clicks a cell with no 
 // mines around, we need to open 
@@ -165,3 +170,20 @@ function checkGameOver() { }
 // NOTE: start with a basic implementation that only opens the non-mine 1st degree neighbors
 // BONUS: if you have the time later, try to work more like the real algorithm (see description at the Bonuses section below) 
 function expandShown(board, elCell, i, j) { }
+
+//resets model and dom
+function restartGame() {
+    gGame = {
+        isOn: false,
+        shownCount: 0,
+        markedCount: 0,
+        secsPassed: 0
+    }
+    gBoard = []
+
+    var strHTML = ''
+    const elBoard = document.querySelector('.board')
+    elBoard.innerHTML = strHTML
+
+    onInit()
+}

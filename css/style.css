@@ -46,3 +46,7 @@ a:hover {
     background-color: darkblue;
     color: antiquewhite;
 }
+
+.reset-button {
+    margin-bottom: 20px;
+}
