@@ -44,6 +44,22 @@ function getPosOfRandomCell(mat, value) {
     return randomCellPos
 }
 
+function getAllMines(board) {
+    var allMines = []
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+            if (board[i][j].isMine) {
+                allMines.push({ i, j })
+            } else {
+                continue
+            }
+        }
+    }
+    if (allMines.length === 0) return null
+    // logg for debgging, delete later
+    console.log('allMines:', allMines)
+    return allMines
+}
 
 function getAllEmptyCells(board) {
     var allEmptyCells = []

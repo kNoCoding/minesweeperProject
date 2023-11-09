@@ -1,6 +1,7 @@
 'use strict'
 
 const MINE = '💣'
+const FLAG = '🚩'
 
 /*The model – A Matrix containing cell objects. Each cell has: 
 each cell in the gBoard is going to have this object
@@ -25,6 +26,7 @@ var gGame = {
     isOn: false,
     shownCount: 0,
     markedCount: 0,
+    minesRevealed: 0,
     secsPassed: 0
 }
 console.log('gGame:', gGame)
@@ -60,7 +62,6 @@ function buildBoard() {
         }
     }
 
-
     ///////////////////        MANUAL MINES SETTING        ///////////////////
     //set 3 mines in the board manually
     // board[0][0].isMine = true
@@ -77,8 +78,6 @@ function buildBoard() {
 function setMinesInRandomCells(board) {
 
     var allEmptyCells = getAllEmptyCells(board)
-    //can delete selectedCells later, used it for debugging
-    var selectedCells = []
     var emptyCell
 
     for (var i = 0; i < gLevel.MINES; i++) {
@@ -90,15 +89,10 @@ function setMinesInRandomCells(board) {
         var idxI = emptyCell.i
         var idxJ = emptyCell.j
 
-        //can delete selectedCells later, used it for debugging
-        selectedCells.push(emptyCell)
-
         gBoard[idxI][idxJ].isMine = true
 
         setMinesNegsCount(board)
     }
-    //can delete selectedCells later, used it for debugging
-    console.log('bombs are here:', selectedCells)
 }
 
 // set the cell's minesAroundCount
@@ -149,19 +143,45 @@ function renderBoard(board) {
             }
 
             const className = `cell cell-${i}-${j}`
-            strHTML += `<td class="${className}" onclick="onCellClicked(this, event, ${i}, ${j})">${currCell}</td>\n`
+            strHTML += `<td class="${className}" onclick="onCellClicked(this, ${i}, ${j})">${currCell}</td>\n`
         }
         strHTML += `</tr>\n`
     }
     const elBoard = document.querySelector('.board')
     elBoard.innerHTML = strHTML
+
+    var elBoardContainer = document.querySelector('.board-container')
+    elBoardContainer.addEventListener('contextmenu', function (ev) {
+        // prevents from default right click happening (contextmenu option)
+        ev.preventDefault()
+        // 
+        var cell = ev.target
+        console.log('cell:', cell)
+        // array of cell coords
+        var cellCoords = cell.className.split('-')
+
+        var i = +cellCoords[1]
+        var j = +cellCoords[2]
+        onCellMarked(cell, i, j)
+    })
 }
 
-// Called when a cell is clicked
-function onCellClicked(elCell, ev, i, j) {
+// called when a cell is clicked
+function onCellClicked(elCell, i, j) {
+
+
+    // if isMarked then dont let left click to work
+    if (gBoard[i][j].isMarked) return
 
     //dont allow clicking revealed cell
     if (gBoard[i][j].isShown === true) return
+
+    // if clicked on mine add to the counter and checkGameOver()
+    if (gBoard[i][j].isMine) {
+        gGame.minesRevealed++
+        checkGameOver()
+
+    }
 
     //update model
     gBoard[i][j].isShown = true
@@ -171,13 +191,54 @@ function onCellClicked(elCell, ev, i, j) {
     elCell.classList.add('revealed')
 }
 
-//Called when a cell is clicked
-function onCellMarked(elCell) { }
+// toggle flag with right-clicks on cells
+function onCellMarked(elCell, i, j) {
+
+    // dont allow flag on revealed cells
+    // if (gBoard[i][j].isShown) return
+
+
+
+    // toggle isMarked in the model if right clicked again on the flag
+    if (!gBoard[i][j].isMarked) {
+        gBoard[i][j].isMarked = true
+    } else {
+        gBoard[i][j].isMarked = false
+    }
+
+
+
+    // // check model to see if isMarked
+    // if (gBoard[i][j].isMarked) {
+    //     elCell.innerHTML = FLAG
+    //     elCell.classList.add('flagged')
+    // } else {
+    //     // remove flag if !isMarked
+    //     elCell.innerHTML = ''
+    //     elCell.classList.remove('flagged')
+
+    // check model to see if isMarked WORKS WORKS WORKS WORKS
+    if (gBoard[i][j].isMarked) {
+        elCell.innerHTML = FLAG
+        elCell.classList.add('flagged')
+    } else {
+        // remove flag if !isMarked
+        elCell.innerHTML = ''
+        elCell.classList.remove('flagged')
+    }
+    // check model to see if isMarked WORKS WORKS WORKS WORKS
+}
 
 //Game ends when all mines are 
 // marked, and all the other cells 
 // are shown 
 function checkGameOver() {
+
+    if (gGame.minesRevealed > 0) {
+        return console.log('gameOver!')
+    } else if (gGame.shownCount + gGame.markedCount === gBoard.length - gLevel.MINES) {
+        return console.log('gameWON!')
+    }
 
 }
 

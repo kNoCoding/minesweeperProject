@@ -22,9 +22,9 @@ table {
 
 td {
     color: transparent;
-    /* table-layout: auto; */
+
     padding: 20px;
-    /* aspect-ratio: 1 / 1; */
+
     background-color: whitesmoke;
 }
 
@@ -57,4 +57,8 @@ a:hover {
 
 .reset-button {
     margin-bottom: 20px;
+}
+
+.flagged {
+    color: black;
 }
