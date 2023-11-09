@@ -77,100 +77,28 @@ function buildBoard() {
 function setMinesInRandomCells(board) {
 
     var allEmptyCells = getAllEmptyCells(board)
+    //can delete selectedCells later, used it for debugging
     var selectedCells = []
     var emptyCell
 
     for (var i = 0; i < gLevel.MINES; i++) {
 
-        var emptyCell = findEmptyCell(board)
-        console.log('im in the for loop! ');
-        // console.log('emptyCell:', emptyCell)
-        // console.log('emptyCell.i:', emptyCell.i)
+        emptyCell = getRandomItem(allEmptyCells)
+        var idxOfEmptyCell = allEmptyCells.indexOf(emptyCell)
+        allEmptyCells.splice(idxOfEmptyCell, 1)
 
+        var idxI = emptyCell.i
+        var idxJ = emptyCell.j
 
-        // make it gen a new empty cell
-        // // // does work wonder why // // // // // ***** // // // //
-        if (selectedCells.length > 1) {
-            if (selectedCells.includes(emptyCell), (selectedCells.length - 1)) {
-                console.log('reoccuring cell, goteeeem:')
-
-                continue
-            }
-        }
-
-
-        var idxI = emptyCell[0].i
-        var idxJ = emptyCell[0].j
-
-        // emptyCell = [allEmptyCells.splice(getRandomInt(0, allEmptyCells.length), 1)]
-        // var lastSelectedCell = []
-        // lastSelectedCell.push(emptyCell)
-
-        console.log('emptyCell:', emptyCell)
-        console.log('the random cells: ');
-
-        /*
-        
-        
-        // // make it gen a new empty cell
-        // // // does work wonder why // // // // // ***** // // // //
-        // if (selectedCells.length > 1) {
-        //     if (selectedCells.includes(emptyCell), (selectedCells.length - 1)) {
-        //         console.log('reoccuring cell, goteeeem:')
-        
-        //         continue
-        //     }
-        // }
-        
-        // if (selectedCells.length > 1) {
-        //     if (selectedCells.includes(lastSelectedCell), (selectedCells.length - 1)) {
-        //         console.log('reoccuring cell, goteeeem:')
-        //         emptyCell = findEmptyCell(board)
-        //         continue
-        
-        //     }
-        // }
-        
-        
-        // // does work wonder why // // // // // ***** // // // //
-        // if (selectedCells.length > 1) {
-        //     if (selectedCells.includes(emptyCell), (selectedCells.length - 1)) {
-        //         console.log('reoccuring cell, goteeeem:')
-        
-        //         continue
-        //     }
-        // }
-        
-        // // doesnt work wonder why 
-        // if (selectedCells.length > 1) {
-        //     if (selectedCells.includes(emptyCell, (selectedCells.length - 1))) {
-        //         console.log('reoccuring cell, goteeeem:')
-        
-        //         continue
-        //     }
-        // }
-        */
-
-        // var idxI = emptyCell.i
-        // var idxJ = emptyCell.j
-
-        // // works
-        // var idxI = emptyCell[0].i
-        // var idxJ = emptyCell[0].j
-
+        //can delete selectedCells later, used it for debugging
         selectedCells.push(emptyCell)
-        allEmptyCells.splice(emptyCell)
-        console.log('new cell in the array');
-
-
-        console.log(`idxI, idxJ: ${idxI},${idxJ}`);
 
         gBoard[idxI][idxJ].isMine = true
 
         setMinesNegsCount(board)
-        // renderBoard(board)
     }
-    console.log('selectedCells:', selectedCells)
+    //can delete selectedCells later, used it for debugging
+    console.log('bombs are here:', selectedCells)
 }
 
 // set the cell's minesAroundCount
