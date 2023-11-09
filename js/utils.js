@@ -45,7 +45,21 @@ function getPosOfRandomCell(mat, value) {
 }
 
 
-//consider changing it if doesnt work, i maybe fked it abit.
+function getAllEmptyCells(board) {
+    var allEmptyCells = []
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+            if (!board[i][j].isMine) {
+                allEmptyCells.push({ i, j })
+            } else {
+                continue
+            }
+        }
+    }
+    if (allEmptyCells.length === 0) return null
+    return allEmptyCells
+}
+
 function findEmptyCell(board) {
     var emptyCells = []
     for (let i = 0; i < board.length; i++) {

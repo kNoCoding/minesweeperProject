@@ -66,34 +66,114 @@ function buildBoard() {
     // board[0][0].isMine = true
     // board[1][2].isMine = true
     // board[board.length - 1][board.length - 1].isMine = true
-    
+
     // setMinesNegsCount(board)
     ///////////////////        MANUAL MINES SETTING        ///////////////////
 
     return board
 }
 
+// inserts mines into random cells
 function setMinesInRandomCells(board) {
+
+    var allEmptyCells = getAllEmptyCells(board)
+    var selectedCells = []
+    var emptyCell
+
     for (var i = 0; i < gLevel.MINES; i++) {
+
         var emptyCell = findEmptyCell(board)
         console.log('im in the for loop! ');
         // console.log('emptyCell:', emptyCell)
         // console.log('emptyCell.i:', emptyCell.i)
+
+
+        // make it gen a new empty cell
+        // // // does work wonder why // // // // // ***** // // // //
+        if (selectedCells.length > 1) {
+            if (selectedCells.includes(emptyCell), (selectedCells.length - 1)) {
+                console.log('reoccuring cell, goteeeem:')
+
+                continue
+            }
+        }
+
+
         var idxI = emptyCell[0].i
         var idxJ = emptyCell[0].j
+
+        // emptyCell = [allEmptyCells.splice(getRandomInt(0, allEmptyCells.length), 1)]
+        // var lastSelectedCell = []
+        // lastSelectedCell.push(emptyCell)
+
+        console.log('emptyCell:', emptyCell)
+        console.log('the random cells: ');
+
+        /*
+        
+        
+        // // make it gen a new empty cell
+        // // // does work wonder why // // // // // ***** // // // //
+        // if (selectedCells.length > 1) {
+        //     if (selectedCells.includes(emptyCell), (selectedCells.length - 1)) {
+        //         console.log('reoccuring cell, goteeeem:')
+        
+        //         continue
+        //     }
+        // }
+        
+        // if (selectedCells.length > 1) {
+        //     if (selectedCells.includes(lastSelectedCell), (selectedCells.length - 1)) {
+        //         console.log('reoccuring cell, goteeeem:')
+        //         emptyCell = findEmptyCell(board)
+        //         continue
+        
+        //     }
+        // }
+        
+        
+        // // does work wonder why // // // // // ***** // // // //
+        // if (selectedCells.length > 1) {
+        //     if (selectedCells.includes(emptyCell), (selectedCells.length - 1)) {
+        //         console.log('reoccuring cell, goteeeem:')
+        
+        //         continue
+        //     }
+        // }
+        
+        // // doesnt work wonder why 
+        // if (selectedCells.length > 1) {
+        //     if (selectedCells.includes(emptyCell, (selectedCells.length - 1))) {
+        //         console.log('reoccuring cell, goteeeem:')
+        
+        //         continue
+        //     }
+        // }
+        */
+
+        // var idxI = emptyCell.i
+        // var idxJ = emptyCell.j
+
+        // // works
+        // var idxI = emptyCell[0].i
+        // var idxJ = emptyCell[0].j
+
+        selectedCells.push(emptyCell)
+        allEmptyCells.splice(emptyCell)
+        console.log('new cell in the array');
+
+
         console.log(`idxI, idxJ: ${idxI},${idxJ}`);
+
         gBoard[idxI][idxJ].isMine = true
 
         setMinesNegsCount(board)
         // renderBoard(board)
     }
-
+    console.log('selectedCells:', selectedCells)
 }
 
-/*Count mines around EACH cell 
-and set the cell's 
-minesAroundCount
-*/
+// set the cell's minesAroundCount
 function setMinesNegsCount(board) {
     var minesNegsCount = 0
 
@@ -147,11 +227,6 @@ function renderBoard(board) {
     }
     const elBoard = document.querySelector('.board')
     elBoard.innerHTML = strHTML
-
-    //didnt work here - im trying it in initGame() line 37
-    // random MINES gen - for manual MINES gen uncomment last lines in buildBoard()
-    // setMinesInRandomCells(gBoard)
-    // random MINES gen - for manual MINES gen uncomment last lines in buildBoard()
 }
 
 // Called when a cell is clicked
@@ -199,6 +274,11 @@ function restartGame() {
     var strHTML = ''
     const elBoard = document.querySelector('.board')
     elBoard.innerHTML = strHTML
+
+    gLevel = {
+        SIZE: 4,
+        MINES: 3,
+    }
 
     onInit()
 }
