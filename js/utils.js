@@ -46,11 +46,11 @@ function getPosOfRandomCell(mat, value) {
 
 
 //consider changing it if doesnt work, i maybe fked it abit.
-function findEmptyCell() {
+function findEmptyCell(board) {
     var emptyCells = []
-    for (let i = 0; i < gBoard.length; i++) {
-        for (let j = 0; j < gBoard[i].length; j++) {
-            if (gBoard[i][j] !== MINE) {
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+            if (board[i][j] !== MINE) {
                 emptyCells.push({
                     i,
                     j,
@@ -59,7 +59,8 @@ function findEmptyCell() {
         }
     }
     if (emptyCells.length === 0) return null
-    return emptyCells.splice(getRandomInt(0, emptyCells.length), 1)[0]
+    // return emptyCells.splice(getRandomInt(0, emptyCells.length), 1)[0]
+    return emptyCells.splice(getRandomInt(0, emptyCells.length), 1)
 }
 
 function sortNums(nums) {

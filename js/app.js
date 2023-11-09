@@ -16,7 +16,7 @@ var gBoard
 // This is an object by which the board size is set
 var gLevel = {
     SIZE: 4,
-    MINES: 2,
+    MINES: 3,
 }
 console.log('gLevel:', gLevel)
 
@@ -34,6 +34,9 @@ function onInit() {
     gBoard = buildBoard()
     gGame.isOn = true
     console.log('gBoard:', gBoard)
+
+    // random MINES gen. for manual MINES gen go to after the loop in buildBoard()
+    setMinesInRandomCells(gBoard)
     renderBoard(gBoard)
 }
 
@@ -57,27 +60,34 @@ function buildBoard() {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // STOPPED HERE - ONLY ADD THE RANDOM MINE GEN AND I CAN GET ON TO THE FUNCTIONALITY & FEATURES
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // var emptyCell = findEmptyCell()
-    // console.log('emptyCell:', emptyCell)
-    //     for (var i=0; i<3; i++){
-    // 
-    //     }
-    // var randomNum = getRandomIntInclusive(0, board.length)
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+    ///////////////////        MANUAL MINES SETTING        ///////////////////
     //set 3 mines in the board manually
-    board[0][0].isMine = true
-    board[1][2].isMine = true
-    board[board.length - 1][board.length - 1].isMine = true
-
-    setMinesNegsCount(board)
+    // board[0][0].isMine = true
+    // board[1][2].isMine = true
+    // board[board.length - 1][board.length - 1].isMine = true
+    
+    // setMinesNegsCount(board)
+    ///////////////////        MANUAL MINES SETTING        ///////////////////
 
     return board
+}
+
+function setMinesInRandomCells(board) {
+    for (var i = 0; i < gLevel.MINES; i++) {
+        var emptyCell = findEmptyCell(board)
+        console.log('im in the for loop! ');
+        // console.log('emptyCell:', emptyCell)
+        // console.log('emptyCell.i:', emptyCell.i)
+        var idxI = emptyCell[0].i
+        var idxJ = emptyCell[0].j
+        console.log(`idxI, idxJ: ${idxI},${idxJ}`);
+        gBoard[idxI][idxJ].isMine = true
+
+        setMinesNegsCount(board)
+        // renderBoard(board)
+    }
+
 }
 
 /*Count mines around EACH cell 
@@ -137,6 +147,11 @@ function renderBoard(board) {
     }
     const elBoard = document.querySelector('.board')
     elBoard.innerHTML = strHTML
+
+    //didnt work here - im trying it in initGame() line 37
+    // random MINES gen - for manual MINES gen uncomment last lines in buildBoard()
+    // setMinesInRandomCells(gBoard)
+    // random MINES gen - for manual MINES gen uncomment last lines in buildBoard()
 }
 
 // Called when a cell is clicked
