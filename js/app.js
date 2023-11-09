@@ -142,7 +142,7 @@ function renderBoard(board) {
                 currCell = +(board[i][j].minesAroundCount)
             }
 
-            const className = `cell cell-${i}-${j}`
+            const className = `cell cell-${i}-${j}-`
             strHTML += `<td class="${className}" onclick="onCellClicked(this, ${i}, ${j})">${currCell}</td>\n`
         }
         strHTML += `</tr>\n`
@@ -155,13 +155,16 @@ function renderBoard(board) {
         // prevents from default right click happening (contextmenu option)
         ev.preventDefault()
         // 
+
         var cell = ev.target
         console.log('cell:', cell)
         // array of cell coords
         var cellCoords = cell.className.split('-')
+        cellCoords.pop()
+        console.log('cellCoords:', cellCoords)
 
-        var i = +cellCoords[1]
-        var j = +cellCoords[2]
+        var i = cellCoords[1]
+        var j = cellCoords[2]
         onCellMarked(cell, i, j)
     })
 }
@@ -169,18 +172,16 @@ function renderBoard(board) {
 // called when a cell is clicked
 function onCellClicked(elCell, i, j) {
 
-
     // if isMarked then dont let left click to work
     if (gBoard[i][j].isMarked) return
 
     //dont allow clicking revealed cell
-    if (gBoard[i][j].isShown === true) return
+    // if (gBoard[i][j].isShown === true) return
 
     // if clicked on mine add to the counter and checkGameOver()
     if (gBoard[i][j].isMine) {
         gGame.minesRevealed++
         checkGameOver()
-
     }
 
     //update model
@@ -194,39 +195,31 @@ function onCellClicked(elCell, i, j) {
 // toggle flag with right-clicks on cells
 function onCellMarked(elCell, i, j) {
 
-    // dont allow flag on revealed cells
-    // if (gBoard[i][j].isShown) return
+    // dont allow flag on revealed cells - WORKS DONT DELETE
+    if (gBoard[i][j].isShown) return
 
-
-
-    // toggle isMarked in the model if right clicked again on the flag
-    if (!gBoard[i][j].isMarked) {
+    // toggle isMarked in the model if right clicked again on the flag - WORKS DONT DELETE
+    if (gBoard[i][j].isMarked === false) {
         gBoard[i][j].isMarked = true
     } else {
         gBoard[i][j].isMarked = false
     }
 
 
+    // HAS ISSUES HAS ISSUES check model to see if isMarked HAS ISSUES HAS ISSUES
 
-    // // check model to see if isMarked
-    // if (gBoard[i][j].isMarked) {
-    //     elCell.innerHTML = FLAG
-    //     elCell.classList.add('flagged')
-    // } else {
-    //     // remove flag if !isMarked
-    //     elCell.innerHTML = ''
-    //     elCell.classList.remove('flagged')
-
-    // check model to see if isMarked WORKS WORKS WORKS WORKS
     if (gBoard[i][j].isMarked) {
+        gGame.markedCount++
         elCell.innerHTML = FLAG
         elCell.classList.add('flagged')
     } else {
         // remove flag if !isMarked
+        // gBoard[i][j].markedCount-- works wtf
+        gGame.markedCount--
         elCell.innerHTML = ''
         elCell.classList.remove('flagged')
     }
-    // check model to see if isMarked WORKS WORKS WORKS WORKS
+    //HAS ISSUES HAS ISSUES check model to see if isMarked HAS ISSUES HAS ISSUES
 }
 
 //Game ends when all mines are 
@@ -236,7 +229,7 @@ function checkGameOver() {
 
     if (gGame.minesRevealed > 0) {
         return console.log('gameOver!')
-    } else if (gGame.shownCount + gGame.markedCount === gBoard.length - gLevel.MINES) {
+    } else if (gGame.shownCount + gGame.markedCount === gBoard.length ** 2) {
         return console.log('gameWON!')
     }
 
