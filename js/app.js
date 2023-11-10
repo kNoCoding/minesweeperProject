@@ -164,14 +164,14 @@ function renderBoard(board) {
     elBoardContainer.addEventListener('contextmenu', function (ev) {
         // prevents from default right click happening (contextmenu option)
         ev.preventDefault()
-        // 
+
+        // if game is not on dont let left clicks happen 
+        if (!gGame.isOn) return
 
         var cell = ev.target
-        console.log('cell:', cell)
         // array of cell coords
         var cellCoords = cell.className.split('-')
         cellCoords.pop()
-        console.log('cellCoords:', cellCoords)
 
         var i = cellCoords[1]
         var j = cellCoords[2]
@@ -184,15 +184,19 @@ function onCellClicked(elCell, i, j) {
 
     var cellClicked = { i, j }
 
+    // if game is not on dont let left clicks happen 
+    if (!gGame.isOn) return
+
     // if isMarked then dont let left click to work
     if (gBoard[i][j].isMarked) return
 
-    //dont allow clicking revealed cell
-    // if (gBoard[i][j].isShown === true) return
+    // dont allow clicking revealed cell
+    if (gBoard[i][j].isShown === true) return
 
     // if clicked on mine add to the counter and checkGameOver()
     if (gBoard[i][j].isMine) {
-        gGame.minesRevealed++
+        console.log('mine clicked')
+        ++gGame.minesRevealed
         checkGameOver(cellClicked)
     }
 
@@ -202,10 +206,23 @@ function onCellClicked(elCell, i, j) {
 
     // update dom
     elCell.classList.add('revealed')
+
+    var totalCellAmount = gBoard.length ** 2
+    /* check if this is a win - 
+    this check has to come only AFTER
+    gGame.shownCount was raised by 1 */
+    if (gGame.minesRevealed === 0 &&
+        gGame.markedCount === gLevel.MINES &&
+        gGame.shownCount === totalCellAmount - gLevel.MINES) {
+        checkGameOver(cellClicked)
+    }
 }
 
 // toggle flag with right-clicks on cells
 function onCellMarked(elCell, i, j) {
+
+    // if game is not on dont let left clicks happen 
+    if (!gGame.isOn) return
 
     // dont allow flag on revealed cells - WORKS DONT DELETE
     if (gBoard[i][j].isShown) return
@@ -217,9 +234,7 @@ function onCellMarked(elCell, i, j) {
         gBoard[i][j].isMarked = false
     }
 
-
     // HAS ISSUES HAS ISSUES check model to see if isMarked HAS ISSUES HAS ISSUES
-
     if (gBoard[i][j].isMarked) {
         gGame.markedCount++
         elCell.innerHTML = FLAG
@@ -232,33 +247,32 @@ function onCellMarked(elCell, i, j) {
         elCell.classList.remove('flagged')
     }
     //HAS ISSUES HAS ISSUES check model to see if isMarked HAS ISSUES HAS ISSUES
+
 }
 
-//Game ends when all mines are 
-// marked, and all the other cells 
-// are shown 
+// check of the game is won or lost
 function checkGameOver(cellClicked) {
-
-    console.log('cellClicked:', cellClicked)
-
     if (gGame.minesRevealed > 0) {
-        console.log('gameOver!')
+        console.log('gameOver!') // remove this when finished debug
         gameLose(cellClicked)
-        console.log('gLevel:', gLevel)
-        console.log('gGame:', gGame)
-        console.log('gBoard:', gBoard)
-    } else if (gGame.shownCount + gGame.markedCount === gBoard.length ** 2) {
-        console.log('gameWON!')
+    } else if (gGame.minesRevealed === 0 && gGame.markedCount === gLevel.MINES) {
+        console.log('gameWon!') // remove this when finished debug
+        gameWin()
     }
-
 }
 
-// this does what needs to happend when you win
-// like changing to cool smiley
-// stopping clock
-// and when clicked restartGame()
+/* this does what needs to happend when you win
+like changing to cool smiley
+stopping clock
+and when clicked restartGame()*/
 function gameWin() {
 
+    // change the smiley face to a COOL face for winning
+    document.querySelector('.reset-button').innerHTML = COOL
+    // switching the game off to make sure you can not click anything on the board anymore
+    gGame.isOn = false
+
+    // IN THE FUTURE ADD A STOP TO THE TIMER THAT IS RUNNING
 }
 
 // this does what needs to happend when you lose
@@ -266,8 +280,6 @@ function gameWin() {
 // revealing all the mines
 // make the bg of the exact mine clicked be red 
 function gameLose(cellClicked) {
-
-    if (!gGame.isOn) return
 
     var allMines = getAllMines(gBoard)
     var firstMineClicked = cellClicked
@@ -291,10 +303,13 @@ function gameLose(cellClicked) {
         // make the first mine have red bg
         if (gBoard[currMineIdxI][currMineIdxJ] === gBoard[firstMineClicked.i][firstMineClicked.j]) {
             elCurrMine.classList.add('first-mine')
+            gGame.minesRevealed--
         }
     }
 
 }
+
+
 // When user clicks a cell with no 
 // mines around, we need to open 
 // not only that cell, but also its 
@@ -306,7 +321,7 @@ function expandShown(board, elCell, i, j) { }
 //resets model and dom
 function restartGame() {
 
-    // // // // RESET MODEL // // // //
+    //V//V//V// RESET MODEL //V//V//V//
     //reset level model
     gLevel = {
         SIZE: 4,
@@ -322,7 +337,7 @@ function restartGame() {
     }
     //reset board model
     gBoard = []
-    // // // // RESET MODEL // // // //
+    //^//^//^// RESET MODEL //^//^//^//
 
 
     // // // // RESET DOM ELEMENTS // // //
