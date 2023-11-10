@@ -1,5 +1,10 @@
 'use strict'
 
+const ALIVE = '😀'
+const WORRIED = '😯'
+const COOL = '😎'
+const DEAD = '😵'
+
 const MINE = '💣'
 const FLAG = '🚩'
 
@@ -19,7 +24,6 @@ var gLevel = {
     SIZE: 4,
     MINES: 3,
 }
-console.log('gLevel:', gLevel)
 
 // This is an object in which you can keep and update the current game state
 var gGame = {
@@ -29,13 +33,16 @@ var gGame = {
     minesRevealed: 0,
     secsPassed: 0
 }
-console.log('gGame:', gGame)
 
 //This is called when page loads 
 function onInit() {
     gBoard = buildBoard()
     gGame.isOn = true
+    console.log('gLevel:', gLevel)
+    console.log('gGame:', gGame)
     console.log('gBoard:', gBoard)
+
+
 
     // random MINES gen. for manual MINES gen go to after the loop in buildBoard()
     setMinesInRandomCells(gBoard)
@@ -126,6 +133,8 @@ function countMinesNegsCell(board, rowIdx, colIdx) {
     return count
 }
 
+
+
 // Render the board as a <table> to the page
 function renderBoard(board) {
     var strHTML = ''
@@ -143,7 +152,8 @@ function renderBoard(board) {
             }
 
             const className = `cell cell-${i}-${j}-`
-            strHTML += `<td class="${className}" onclick="onCellClicked(this, ${i}, ${j})">${currCell}</td>\n`
+            strHTML += `<td class="${className}"
+             onclick="onCellClicked(this, ${i}, ${j})">${currCell}</td>\n`
         }
         strHTML += `</tr>\n`
     }
@@ -172,6 +182,8 @@ function renderBoard(board) {
 // called when a cell is clicked
 function onCellClicked(elCell, i, j) {
 
+    var cellClicked = { i, j }
+
     // if isMarked then dont let left click to work
     if (gBoard[i][j].isMarked) return
 
@@ -181,7 +193,7 @@ function onCellClicked(elCell, i, j) {
     // if clicked on mine add to the counter and checkGameOver()
     if (gBoard[i][j].isMine) {
         gGame.minesRevealed++
-        checkGameOver()
+        checkGameOver(cellClicked)
     }
 
     //update model
@@ -225,16 +237,64 @@ function onCellMarked(elCell, i, j) {
 //Game ends when all mines are 
 // marked, and all the other cells 
 // are shown 
-function checkGameOver() {
+function checkGameOver(cellClicked) {
+
+    console.log('cellClicked:', cellClicked)
 
     if (gGame.minesRevealed > 0) {
-        return console.log('gameOver!')
+        console.log('gameOver!')
+        gameLose(cellClicked)
+        console.log('gLevel:', gLevel)
+        console.log('gGame:', gGame)
+        console.log('gBoard:', gBoard)
     } else if (gGame.shownCount + gGame.markedCount === gBoard.length ** 2) {
-        return console.log('gameWON!')
+        console.log('gameWON!')
     }
 
 }
 
+// this does what needs to happend when you win
+// like changing to cool smiley
+// stopping clock
+// and when clicked restartGame()
+function gameWin() {
+
+}
+
+// this does what needs to happend when you lose
+// like changing the smiley to dead
+// revealing all the mines
+// make the bg of the exact mine clicked be red 
+function gameLose(cellClicked) {
+
+    if (!gGame.isOn) return
+
+    var allMines = getAllMines(gBoard)
+    var firstMineClicked = cellClicked
+
+    for (var i = 0; i < allMines.length; i++) {
+        var currMine = allMines[i]
+        var currMineIdxI = currMine.i
+        var currMineIdxJ = currMine.j
+        var elCurrMine = document.querySelector(`.cell-${currMineIdxI}-${currMineIdxJ}-`)
+
+        // update model
+        gGame.isOn = false
+        // problem with mines revealed when game ends its 4 instead of 3
+        gGame.minesRevealed++
+        gBoard[currMineIdxI][currMineIdxJ].isShown = true
+
+        // update DOM
+        elCurrMine.classList.add('revealed')
+        document.querySelector('.reset-button').innerHTML = DEAD
+
+        // make the first mine have red bg
+        if (gBoard[currMineIdxI][currMineIdxJ] === gBoard[firstMineClicked.i][firstMineClicked.j]) {
+            elCurrMine.classList.add('first-mine')
+        }
+    }
+
+}
 // When user clicks a cell with no 
 // mines around, we need to open 
 // not only that cell, but also its 
@@ -245,22 +305,36 @@ function expandShown(board, elCell, i, j) { }
 
 //resets model and dom
 function restartGame() {
-    gGame = {
-        isOn: false,
-        shownCount: 0,
-        markedCount: 0,
-        secsPassed: 0
-    }
-    gBoard = []
 
-    var strHTML = ''
-    const elBoard = document.querySelector('.board')
-    elBoard.innerHTML = strHTML
-
+    // // // // RESET MODEL // // // //
+    //reset level model
     gLevel = {
         SIZE: 4,
         MINES: 3,
     }
+    //reset game model
+    gGame = {
+        isOn: true,
+        shownCount: 0,
+        markedCount: 0,
+        minesRevealed: 0,
+        secsPassed: 0
+    }
+    //reset board model
+    gBoard = []
+    // // // // RESET MODEL // // // //
+
+
+    // // // // RESET DOM ELEMENTS // // //
+    //wipe the entire tbody content
+    var strHTML = ''
+    const elBoard = document.querySelector('.board')
+    elBoard.innerHTML = strHTML
+    // restore the smiley face to normal
+    const elResetButton = document.querySelector('.reset-button')
+    elResetButton.innerHTML = ALIVE
+    // // // // RESET DOM ELEMENTS // // //
+
 
     onInit()
 }

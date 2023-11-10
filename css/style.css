@@ -1,31 +1,43 @@
 * {
-    box-sizing: border-box;
+    /* box-sizing: border-box; */
+    box-sizing: content-box;
 }
 
 
 body {
     text-align: center;
     margin: 0 auto;
+
+    background-color: whitesmoke;
 }
 
 table {
     margin: 0 auto;
 
-    background-color: darkgrey;
-    width: 100%;
-    height: 100%;
-    table-layout: fixed;
-    max-width: 200px;
-    max-height: 200px;
-    /* aspect-ratio: 1 / 1; */
+    background-color: #bdbdbd;
+    width: auto;
+    height: auto;
+    max-width: 400px;
+    max-height: 400px;
+
+    border-top: 2px solid white;
+    border-left: 2px solid white;
+    border-bottom: 2px solid #7d7d7d;
+    border-right: 2px solid #7d7d7d;
 }
 
 td {
     color: transparent;
 
-    padding: 20px;
+    background-color: #bdbdbd;
 
-    background-color: whitesmoke;
+    border-top: 2px solid white;
+    border-left: 2px solid white;
+    border-bottom: 2px solid #7d7d7d;
+    border-right: 2px solid #7d7d7d;
+
+    width: 24px;
+    height: 24px;
 }
 
 td:hover {
@@ -34,6 +46,12 @@ td:hover {
 
 .revealed {
     color: black;
+    /* border: 2px solid #8a8a8a; */
+    border-top: 2px solid #8a8a8a;
+    border-left: 2px solid #8a8a8a;
+    border-bottom: 2px solid white;
+    border-right: 2px solid white;
+    background-color: #eeeeee;
 }
 
 .footer {
@@ -56,9 +74,24 @@ a:hover {
 }
 
 .reset-button {
+
+    border-top: 2px solid white;
+    border-left: 2px solid white;
+    border-bottom: 2px solid #7d7d7d;
+    border-right: 2px solid #7d7d7d;
+
+    width: 26px;
+    height: 26px;
+
     margin-bottom: 20px;
+
+    padding: 0;
 }
 
 .flagged {
     color: black;
+}
+
+.first-mine {
+    background-color: red;
 }

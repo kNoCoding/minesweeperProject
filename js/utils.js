@@ -56,8 +56,8 @@ function getAllMines(board) {
         }
     }
     if (allMines.length === 0) return null
-    // logg for debgging, delete later
-    console.log('allMines:', allMines)
+    // // logg for debgging, delete later
+    // console.log('allMines:', allMines)
     return allMines
 }
 
