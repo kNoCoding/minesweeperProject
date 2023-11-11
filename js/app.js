@@ -26,7 +26,7 @@ var gBoard
 // This is an object by which the board size is set
 var gLevel = {
     SIZE: 4,
-    MINES: 3,
+    MINES: 2,
 }
 
 // This is an object in which you can keep and update the current game state
@@ -47,6 +47,7 @@ function onInit() {
     console.log('gBoard:', gBoard)
 
     // random MINES gen. for manual MINES gen go to after the loop in buildBoard()
+    // i might move it to onCellClicked to make the first click never mine
     setMinesInRandomCells(gBoard)
     renderBoard(gBoard)
 }
@@ -191,12 +192,7 @@ function handleRightClick(ev) {
 function onCellClicked(elCell, i, j) {
 
     var cellClicked = { i, j }
-    //////////////////////////////////////////////////////////////////////
-    //insert the expandShown function here in all kinds of if statements
 
-    // Cell without neighbors – expand it and its 1st degree neighbors
-    if (gBoard[i][j].minesAroundCount === 0) expandShown(gBoard, elCell, i, j)
-    //////////////////////////////////////////////////////////////////////
 
     // if game is not on dont let left clicks happen 
     if (!gGame.isOn) return
@@ -216,10 +212,23 @@ function onCellClicked(elCell, i, j) {
 
     //update model
     gBoard[i][j].isShown = true
-    gGame.shownCount++
+    //works and keep it here testing it for now
+    // gGame.shownCount++
+
 
     // update dom
     elCell.classList.add('revealed')
+
+
+    ///////////////////// TESTING ///////////////
+    // maybe this will make the first click never a mine
+    if (gGame.shownCount === 1 && gBoard[i][j].isMine) {
+        setMinesInRandomCells(gBoard)
+        gGame.shownCount++
+    }
+
+    ///////////////////// TESTING ///////////////
+
 
     var totalCellAmount = gBoard.length ** 2
     /* check if this is a win - 
@@ -230,6 +239,13 @@ function onCellClicked(elCell, i, j) {
         gGame.shownCount === totalCellAmount - gLevel.MINES) {
         checkGameOver(cellClicked)
     }
+
+    // Cell without neighbors – expand it and its 1st degree neighbors
+    if (gBoard[i][j].minesAroundCount === 0) {
+        expandShown(gBoard, elCell, i, j)
+
+    }
+
 }
 
 // toggle flag with right-clicks on cells
@@ -268,19 +284,14 @@ function onCellMarked(elCell, i, j) {
         checkGameOver(cellClicked)
     } else {
         // remove flag if !isMarked
-        // gBoard[i][j].markedCount-- works wtf
+
         gGame.markedCount--
-        // elCell.innerHTML = elCellValueBeforeFlag
+
         elCell.classList.remove('flagged')
         elCell.innerHTML = ''
         elCell.innerHTML = elCellValueBeforeFlag
 
     }
-    //HAS ISSUES HAS ISSUES check model to see if isMarked HAS ISSUES HAS ISSUES
-    // if (elCell.innerHTML === FLAG) {
-    //     elCell.innerHTML = elCellValueBeforeFlag
-    // }
-    // elCell.innerHTML = elCellValueBeforeFlag
 
 }
 
@@ -291,7 +302,7 @@ function checkGameOver(cellClicked) {
         gameLose(cellClicked)
 
     } else if (gGame.minesRevealed === 0 && gGame.markedCount === gLevel.MINES &&
-        gGame.shownCount === gBoard.length ** 2 - gLevel.MINES) {
+        gGame.shownCount === (gBoard.length ** 2) - gLevel.MINES) {
         console.log('gameWon!') // remove this when finished debug
         gameWin()
     }
@@ -380,12 +391,13 @@ function expandShown(board, elCell, rowIdx, colIdx) {
         console.log('elCellSelector:', elCellSelector)
         console.log('elCurrNonMineCell:', elCurrNonMineCell)
         // console.log('currNonMineCell:', currNonMineCell)
+        if (gBoard[currIdxI][currIdxJ].isShown) gGame.shownCount--
         gBoard[currIdxI][currIdxJ].isShown = true
         elCurrNonMineCell.classList.add('revealed')
-
-
+        gGame.shownCount++
 
     }
+    // gGame.shownCount--
     // renderBoard(board)
 }
 
