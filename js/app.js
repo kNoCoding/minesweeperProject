@@ -191,6 +191,12 @@ function handleRightClick(ev) {
 function onCellClicked(elCell, i, j) {
 
     var cellClicked = { i, j }
+    //////////////////////////////////////////////////////////////////////
+    //insert the expandShown function here in all kinds of if statements
+
+    // Cell without neighbors – expand it and its 1st degree neighbors
+    if (gBoard[i][j].minesAroundCount === 0) expandShown(gBoard, elCell, i, j)
+    //////////////////////////////////////////////////////////////////////
 
     // if game is not on dont let left clicks happen 
     if (!gGame.isOn) return
@@ -345,7 +351,43 @@ function gameLose(cellClicked) {
 // neighbors.  
 // NOTE: start with a basic implementation that only opens the non-mine 1st degree neighbors
 // BONUS: if you have the time later, try to work more like the real algorithm (see description at the Bonuses section below) 
-function expandShown(board, elCell, i, j) { }
+function expandShown(board, elCell, rowIdx, colIdx) {
+    console.log('expandShown work\n board:', board)
+    console.log('elCell:', elCell)
+    console.log('rowIdx:', rowIdx)
+    console.log('colIdx:', colIdx)
+
+    var count = 0
+    var nonMineNegs = []
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+        if (i < 0 || i >= board.length) continue
+        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+            if (i === rowIdx && j === colIdx) continue
+            if (j < 0 || j >= board[0].length) continue
+            var currCell = board[i][j]
+            if (!currCell.isMine) nonMineNegs.push({ i, j }), count++
+        }
+    }
+    console.log('non mine negs count:', count)
+    console.log('nonMineNegs:', nonMineNegs)
+
+    for (var i = 0; i < nonMineNegs.length; i++) {
+        var currNonMineCell = nonMineNegs[i]
+        var currIdxI = currNonMineCell.i
+        var currIdxJ = currNonMineCell.j
+        var elCellSelector = `.cell-${currIdxI}-${currIdxJ}-`
+        var elCurrNonMineCell = document.querySelector(elCellSelector)
+        console.log('elCellSelector:', elCellSelector)
+        console.log('elCurrNonMineCell:', elCurrNonMineCell)
+        // console.log('currNonMineCell:', currNonMineCell)
+        gBoard[currIdxI][currIdxJ].isShown = true
+        elCurrNonMineCell.classList.add('revealed')
+
+
+
+    }
+    // renderBoard(board)
+}
 
 //resets model and dom
 function restartGame() {
