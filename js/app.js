@@ -48,7 +48,7 @@ function onInit() {
 
     // random MINES gen. for manual MINES gen go to after the loop in buildBoard()
     // i might move it to onCellClicked to make the first click never mine
-    setMinesInRandomCells(gBoard)
+    // setMinesInRandomCells(gBoard)
     renderBoard(gBoard)
 }
 
@@ -102,6 +102,8 @@ function setMinesInRandomCells(board) {
         gBoard[idxI][idxJ].isMine = true
 
         setMinesNegsCount(board)
+        renderBoard(gBoard)
+
     }
 }
 
@@ -210,25 +212,27 @@ function onCellClicked(elCell, i, j) {
         checkGameOver(cellClicked)
     }
 
+    ///////////////////// TESTING ///////////////
+    // maybe this will make the first click never a mine
+    if (gGame.shownCount < 1) {
+
+        setMinesInRandomCells(gBoard)
+        // gBoard[i][j].isShown = true
+
+        // elCell.classList.add('revealed')
+
+        // gGame.shownCount++
+    }
+    ///////////////////// TESTING ///////////////
+
+    //works and keep it here testing it for now
+    gGame.shownCount++
+
     //update model
     gBoard[i][j].isShown = true
-    //works and keep it here testing it for now
-    // gGame.shownCount++
-
 
     // update dom
     elCell.classList.add('revealed')
-
-
-    ///////////////////// TESTING ///////////////
-    // maybe this will make the first click never a mine
-    if (gGame.shownCount === 1 && gBoard[i][j].isMine) {
-        setMinesInRandomCells(gBoard)
-        gGame.shownCount++
-    }
-
-    ///////////////////// TESTING ///////////////
-
 
     var totalCellAmount = gBoard.length ** 2
     /* check if this is a win - 
@@ -245,6 +249,9 @@ function onCellClicked(elCell, i, j) {
         expandShown(gBoard, elCell, i, j)
 
     }
+
+
+    if (gGame.shownCount === 1) renderBoard(gBoard)
 
 }
 
@@ -363,6 +370,8 @@ function gameLose(cellClicked) {
 // NOTE: start with a basic implementation that only opens the non-mine 1st degree neighbors
 // BONUS: if you have the time later, try to work more like the real algorithm (see description at the Bonuses section below) 
 function expandShown(board, elCell, rowIdx, colIdx) {
+
+    if (gBoard[rowIdx][colIdx].isMine) return
     console.log('expandShown work\n board:', board)
     console.log('elCell:', elCell)
     console.log('rowIdx:', rowIdx)
