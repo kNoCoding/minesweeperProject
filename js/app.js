@@ -8,6 +8,10 @@ const DEAD = '😵'
 const MINE = '💣'
 const FLAG = '🚩'
 
+const EASY = '👶'
+const MEDIUM = '🤨'
+const HARD = '🤯'
+
 /*The model – A Matrix containing cell objects. Each cell has: 
 each cell in the gBoard is going to have this object
 = {
@@ -41,8 +45,6 @@ function onInit() {
     console.log('gLevel:', gLevel)
     console.log('gGame:', gGame)
     console.log('gBoard:', gBoard)
-
-
 
     // random MINES gen. for manual MINES gen go to after the loop in buildBoard()
     setMinesInRandomCells(gBoard)
@@ -133,8 +135,6 @@ function countMinesNegsCell(board, rowIdx, colIdx) {
     return count
 }
 
-
-
 // Render the board as a <table> to the page
 function renderBoard(board) {
     var strHTML = ''
@@ -150,7 +150,6 @@ function renderBoard(board) {
             } else {
                 currCell = +(board[i][j].minesAroundCount)
             }
-
             const className = `cell cell-${i}-${j}-`
             strHTML += `<td class="${className}"
              onclick="onCellClicked(this, ${i}, ${j})">${currCell}</td>\n`
@@ -160,23 +159,32 @@ function renderBoard(board) {
     const elBoard = document.querySelector('.board')
     elBoard.innerHTML = strHTML
 
+    // attach the right-click event listener to the board container
+    attachRightClickListener()
+}
+
+
+function attachRightClickListener() {
     var elBoardContainer = document.querySelector('.board-container')
-    elBoardContainer.addEventListener('contextmenu', function (ev) {
-        // prevents from default right click happening (contextmenu option)
-        ev.preventDefault()
+    // Remove any existing listener
+    elBoardContainer.removeEventListener('contextmenu', handleRightClick)
+    // Add a new listener
+    elBoardContainer.addEventListener('contextmenu', handleRightClick)
+}
 
-        // if game is not on dont let left clicks happen 
-        if (!gGame.isOn) return
+function handleRightClick(ev) {
+    // Prevents the default right-click menu
+    ev.preventDefault()
 
-        var cell = ev.target
-        // array of cell coords
-        var cellCoords = cell.className.split('-')
-        cellCoords.pop()
+    // Extract cell coordinates and call onCellMarked
+    var cell = ev.target
+    var cellCoords = cell.className.split('-')
+    // remove the last empty element due to trailing '-'
+    cellCoords.pop()
 
-        var i = cellCoords[1]
-        var j = cellCoords[2]
-        onCellMarked(cell, i, j)
-    })
+    var i = +cellCoords[1]
+    var j = +cellCoords[2]
+    onCellMarked(cell, i, j)
 }
 
 // called when a cell is clicked
@@ -221,6 +229,16 @@ function onCellClicked(elCell, i, j) {
 // toggle flag with right-clicks on cells
 function onCellMarked(elCell, i, j) {
 
+    var cellClicked = { i, j }
+    console.log('elCell:', elCell)
+    var elCellValueBeforeFlag
+    if (gBoard[i][j].isMine) {
+        elCellValueBeforeFlag = MINE
+    } else if (!gBoard[i][j].isMine) {
+        elCellValueBeforeFlag = gBoard[i][j].minesAroundCount
+    }
+    console.log('elCellValueBeforeFlag:', elCellValueBeforeFlag)
+
     // if game is not on dont let left clicks happen 
     if (!gGame.isOn) return
 
@@ -228,6 +246,7 @@ function onCellMarked(elCell, i, j) {
     if (gBoard[i][j].isShown) return
 
     // toggle isMarked in the model if right clicked again on the flag - WORKS DONT DELETE
+    // needs a fix because delets value if was flagged and unflagged
     if (gBoard[i][j].isMarked === false) {
         gBoard[i][j].isMarked = true
     } else {
@@ -239,14 +258,23 @@ function onCellMarked(elCell, i, j) {
         gGame.markedCount++
         elCell.innerHTML = FLAG
         elCell.classList.add('flagged')
+        // check game over for the state when all cells were revealed and only then the flags were added
+        checkGameOver(cellClicked)
     } else {
         // remove flag if !isMarked
         // gBoard[i][j].markedCount-- works wtf
         gGame.markedCount--
-        elCell.innerHTML = ''
+        // elCell.innerHTML = elCellValueBeforeFlag
         elCell.classList.remove('flagged')
+        elCell.innerHTML = ''
+        elCell.innerHTML = elCellValueBeforeFlag
+
     }
     //HAS ISSUES HAS ISSUES check model to see if isMarked HAS ISSUES HAS ISSUES
+    // if (elCell.innerHTML === FLAG) {
+    //     elCell.innerHTML = elCellValueBeforeFlag
+    // }
+    // elCell.innerHTML = elCellValueBeforeFlag
 
 }
 
@@ -255,7 +283,9 @@ function checkGameOver(cellClicked) {
     if (gGame.minesRevealed > 0) {
         console.log('gameOver!') // remove this when finished debug
         gameLose(cellClicked)
-    } else if (gGame.minesRevealed === 0 && gGame.markedCount === gLevel.MINES) {
+
+    } else if (gGame.minesRevealed === 0 && gGame.markedCount === gLevel.MINES &&
+        gGame.shownCount === gBoard.length ** 2 - gLevel.MINES) {
         console.log('gameWon!') // remove this when finished debug
         gameWin()
     }
@@ -309,7 +339,6 @@ function gameLose(cellClicked) {
 
 }
 
-
 // When user clicks a cell with no 
 // mines around, we need to open 
 // not only that cell, but also its 
@@ -323,13 +352,13 @@ function restartGame() {
 
     //V//V//V// RESET MODEL //V//V//V//
     //reset level model
-    gLevel = {
-        SIZE: 4,
-        MINES: 3,
-    }
+    // gLevel = {
+    //     SIZE: 4,
+    //     MINES: 3,
+    // }
     //reset game model
     gGame = {
-        isOn: true,
+        // isOn: true,
         shownCount: 0,
         markedCount: 0,
         minesRevealed: 0,
@@ -339,17 +368,36 @@ function restartGame() {
     gBoard = []
     //^//^//^// RESET MODEL //^//^//^//
 
-
     // // // // RESET DOM ELEMENTS // // //
     //wipe the entire tbody content
+    console.log('elBoard Before Restart:', document.querySelector('.board'))
     var strHTML = ''
     const elBoard = document.querySelector('.board')
+    console.log('elBoard:', elBoard)
+    console.log('strHTML:', strHTML)
     elBoard.innerHTML = strHTML
     // restore the smiley face to normal
     const elResetButton = document.querySelector('.reset-button')
     elResetButton.innerHTML = ALIVE
     // // // // RESET DOM ELEMENTS // // //
 
+    // start the game
+    onInit()
+}
+
+function showSettings() {
+    const elDifficultyButtons = document.querySelector('.difficulty-buttons')
+    elDifficultyButtons.classList.remove('hidden')
+}
+
+function changeDifficulty(elDifficulty) {
+    console.log('elDifficulty:', elDifficulty)
+
+    if (elDifficulty.innerHTML === EASY) gLevel.SIZE = 4, gLevel.MINES = 2
+    if (elDifficulty.innerHTML === MEDIUM) gLevel.SIZE = 8, gLevel.MINES = 14
+    if (elDifficulty.innerHTML === HARD) gLevel.SIZE = 12, gLevel.MINES = 32
 
     onInit()
+    const elDifficultyButtons = document.querySelector('.difficulty-buttons')
+    elDifficultyButtons.classList.add('hidden')
 }

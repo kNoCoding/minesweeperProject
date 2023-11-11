@@ -3,6 +3,10 @@
     box-sizing: content-box;
 }
 
+.hidden {
+    display: none;
+}
+
 
 body {
     text-align: center;
@@ -73,7 +77,7 @@ a:hover {
     color: antiquewhite;
 }
 
-.reset-button {
+button {
 
     border-top: 2px solid white;
     border-left: 2px solid white;
@@ -83,7 +87,7 @@ a:hover {
     width: 26px;
     height: 26px;
 
-    margin-bottom: 20px;
+    /* margin-bottom: 5px; */
 
     padding: 0;
 }
@@ -95,3 +99,9 @@ a:hover {
 .first-mine {
     background-color: red;
 }
+
+.reset-button {
+    margin: 15px 0;
+}
+
+/* .smiley-and-numbers {} */

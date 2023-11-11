@@ -10,12 +10,22 @@
 
 <body onload="onInit()">
     <div>
-        <div class="smiley-and-numbers">
-            <h1>Minesweeper</h1>
-            <button class="reset-button" onclick="restartGame()" title="Restart Game">😀</button>
-            <table class="board-container">
-                <tbody class="board"></tbody>
-            </table>
+        <h1>Minesweeper</h1>
+        <div class="settings-and-difficulty">
+            <button class="settings-button" onclick="showSettings()">⚙️</button>
+            <div class="difficulty-buttons hidden">
+                <h3>Select Difficulty</h3>
+                <button class="easy" onclick="changeDifficulty(this)">👶</button>
+                <button class="medium" onclick="changeDifficulty(this)">🤨</button>
+                <button class="hard" onclick="changeDifficulty(this)">🤯</button>
+            </div>
+            <br>
+            <div class="smiley-and-numbers">
+                <button class="reset-button" onclick="restartGame()" title="Restart Game">😀</button>
+                <table class="board-container">
+                    <tbody class="board"></tbody>
+                </table>
+            </div>
 
         </div>
     </div>
